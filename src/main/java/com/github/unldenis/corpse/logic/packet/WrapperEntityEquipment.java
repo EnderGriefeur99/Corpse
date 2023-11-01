@@ -43,7 +43,7 @@ public class WrapperEntityEquipment implements IPacket {
     PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_EQUIPMENT);
     packet.getIntegers().write(0, this.id);
     if (this.armorContents != null) {
-      if (VersionUtil.isCompatible(VersionUtil.VersionEnum.V1_8)) {
+      if (!XMaterial.supports(8)) {
         packetContainers = new PacketContainer[4];
         ItemStack temp;
         for (int j = 0; j < this.armorContents.length; j++) {
@@ -58,7 +58,7 @@ public class WrapperEntityEquipment implements IPacket {
         //remove null packets
         packetContainers = Arrays.stream(packetContainers).filter(Objects::nonNull)
             .toArray(PacketContainer[]::new);
-      } else if (VersionUtil.isBelow(VersionUtil.VersionEnum.V1_13)) {
+      } else if (!XMaterial.supports(13)) {
         packetContainers = new PacketContainer[4];
         if (this.armorContents[3] != null) {
           PacketContainer cloned = packet.deepClone();

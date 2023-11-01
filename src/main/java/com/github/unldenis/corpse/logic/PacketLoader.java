@@ -61,7 +61,7 @@ public class PacketLoader {
     packets.add(wrapperPlayerInfoRemove);
 
     //Fix 'Caused by: java.lang.IllegalArgumentException: Could not find packet for type BED' for last versions
-    if (VersionUtil.isBelow(VersionUtil.VersionEnum.V1_12)) {
+    if (!XMaterial.supports(13)) {
       packets.add(wrapperBed);
       packets.add(wrapperEntityTeleport);
     }

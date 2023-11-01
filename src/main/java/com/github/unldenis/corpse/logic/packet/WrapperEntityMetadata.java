@@ -38,22 +38,28 @@ public class WrapperEntityMetadata implements IPacket {
     packet.getIntegers().write(0, this.id);
     WrappedDataWatcher watcher = new WrappedDataWatcher();
 
-    if (VersionUtil.isAbove(VersionUtil.VersionEnum.V1_13)) {
+    // if (VersionUtil.isAbove(VersionUtil.VersionEnum.V1_13)) {
+    if (XMaterial.supports(13)) {
       WrappedDataWatcher.WrappedDataWatcherObject visible = new WrappedDataWatcher.WrappedDataWatcherObject(
           6, WrappedDataWatcher.Registry.get(EnumWrappers.getEntityPoseClass()));
       watcher.setObject(visible, EnumWrappers.EntityPose.SLEEPING.toNms());
-            /*
-            //Works and set location a little higher
-            WrappedDataWatcher.WrappedDataWatcherObject bed = new WrappedDataWatcher.WrappedDataWatcherObject(14, WrappedDataWatcher.Registry.getBlockPositionSerializer(true));
-            watcher.setObject(bed, Optional.of(BlockPosition.getConverter().getGeneric(new BlockPosition(corpse.location.toVector()))));
-             */
-      int indexSkinLayer = VersionUtil.isAbove(VersionUtil.VersionEnum.V1_17) ? 17 : 16;
+      /*
+       * //Works and set location a little higher
+       * WrappedDataWatcher.WrappedDataWatcherObject bed = new
+       * WrappedDataWatcher.WrappedDataWatcherObject(14,
+       * WrappedDataWatcher.Registry.getBlockPositionSerializer(true));
+       * watcher.setObject(bed,
+       * Optional.of(BlockPosition.getConverter().getGeneric(new
+       * BlockPosition(corpse.location.toVector()))));
+       */
+      // int indexSkinLayer = VersionUtil.isAbove(VersionUtil.VersionEnum.V1_17) ? 17
+      // : 16;
+      int indexSkinLayer = XMaterial.supports(17) ? 17 : 16;
       WrappedDataWatcher.WrappedDataWatcherObject skinLayers = new WrappedDataWatcher.WrappedDataWatcherObject(
           indexSkinLayer, WrappedDataWatcher.Registry.get(Byte.class));
       watcher.setObject(skinLayers, (byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40 | 0x80));
-    } else {
+    } else
       watcher.setObject(10, (byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40 | 0x80));
-    }
     packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
   }
 

@@ -50,7 +50,7 @@ public class WrapperNamedEntitySpawn implements IPacket {
             packet = new PacketContainer(PacketType.Play.Server.NAMED_ENTITY_SPAWN);
         */
 
-    if (VersionUtil.isCompatible(VersionUtil.VersionEnum.V1_8)) {
+    if (!XMaterial.supports(9)) {
       packet.getModifier().writeDefaults();
       packet.getIntegers().
           write(0, this.id).

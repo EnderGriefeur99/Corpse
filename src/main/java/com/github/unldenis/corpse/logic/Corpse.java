@@ -30,10 +30,10 @@ import org.bukkit.inventory.*;
 import org.bukkit.scoreboard.*;
 import org.jetbrains.annotations.*;
 
-import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+@SuppressWarnings("deprecated")
 public class Corpse {
 
   private static final String TEAM_NAME = "corpse-lib";
@@ -114,7 +114,7 @@ public class Corpse {
         this.packetLoader.getWrapperNamedEntitySpawn().get(),
         this.packetLoader.getWrapperEntityMetadata().get()); // Set sleep
 
-    if (VersionUtil.isBelow(VersionUtil.VersionEnum.V1_12)) {
+    if (!XMaterial.supports(13)) {
       player.sendBlockChange(BedUtil.getBedLocation(location), Material.valueOf("BED_BLOCK"),
           (byte) BedUtil.yawToFacing(location.getYaw()));
       sendPackets(player,
@@ -157,9 +157,8 @@ public class Corpse {
         break;
       }
     }
-    if (npcs == null) {
-      npcs = scoreboard.registerNewTeam(Corpse.TEAM_NAME);
-    }
+    if (npcs == null) npcs = scoreboard.registerNewTeam(Corpse.TEAM_NAME);
+    
     npcs.setNameTagVisibility(NameTagVisibility.NEVER);
     npcs.addEntry(this.name);
   }
@@ -176,7 +175,7 @@ public class Corpse {
     for (PacketContainer packet : packets) {
       try {
         ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
-      } catch (InvocationTargetException e) {
+      } catch (Exception e) {
         e.printStackTrace();
       }
     }

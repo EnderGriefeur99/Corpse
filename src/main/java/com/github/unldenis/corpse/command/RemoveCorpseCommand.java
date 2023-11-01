@@ -18,50 +18,41 @@
 
 package com.github.unldenis.corpse.command;
 
-import com.github.unldenis.corpse.manager.*;
-import org.bukkit.*;
-import org.bukkit.command.*;
-import org.bukkit.entity.*;
-import org.jetbrains.annotations.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import java.util.concurrent.atomic.*;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import com.github.unldenis.corpse.manager.CorpsePool;
 
 public class RemoveCorpseCommand implements CommandExecutor {
 
   @Override
-  public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
-      @NotNull String label, @NotNull String[] args) {
-    if (sender instanceof Player) {
-      Player player = (Player) sender;
-      if (player.hasPermission("corpses.remove")) {
-        if (args.length == 1) {
-          try {
-            double radius = Math.pow(Double.parseDouble(args[0]), 2);
-
-            CorpsePool pool = CorpsePool.getInstance();
-            AtomicInteger count = new AtomicInteger(0);
-            pool.getCorpses()
-                .stream()
-                .filter(
-                    corpse -> corpse.getLocation().distanceSquared(player.getLocation()) <= radius)
-                .forEach(corpse -> {
-                  pool.remove(corpse.getId());
-                  count.incrementAndGet();
-                });
-            player.sendMessage("(" + count.get() + ") " + ChatColor.GREEN + "Corpses deleted");
-            return true;
-          } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED + "Radius must be a number");
-          }
-          return true;
-        }
-        sender.sendMessage(
-            ChatColor.RED + "/removecorpse [radius] - Removes any coprse(s) in a radius of you.");
-      }
-    } else {
-      sender.sendMessage(ChatColor.RED + "Only players can run this command");
+  public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    if (!(sender instanceof Player))
+      return false;
+    Player p = (Player) sender;
+    if (!p.hasPermission("corpses.remove"))
+      return false;
+    if (args.length == 0)
+      return false;
+    try {
+      double radius = Math.pow(Double.parseDouble(args[0]), 2);
+      CorpsePool pool = CorpsePool.getInstance();
+      AtomicInteger count = new AtomicInteger(0);
+      pool.getCorpses().stream().filter(corpse -> corpse.getLocation().distanceSquared(p.getLocation()) <= radius)
+          .forEach(corpse -> {
+            pool.remove(corpse.getId());
+            count.incrementAndGet();
+          });
+      p.sendMessage("(" + count.get() + ") " + ChatColor.GREEN + "Corpses deleted");
+      return true;
+    } catch (NumberFormatException e) {
+      p.sendMessage(ChatColor.RED + "Radius must be a number");
     }
-
-    return false;
+    return true;
   }
 }
